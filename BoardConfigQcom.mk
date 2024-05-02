@@ -132,9 +132,9 @@ ifneq ($(filter $(UM_6_1_FAMILY),$(TARGET_BOARD_PLATFORM)),)
 endif
 
 # Enable ubwcp_headers on UM platforms that support it
-ifneq ($(filter $(UM_6_1_FAMILY),$(TARGET_BOARD_PLATFORM)),)
-    SOONG_CONFIG_qtidisplay_ubwcp_headers := true
-endif
+#ifneq ($(filter $(UM_6_1_FAMILY),$(TARGET_BOARD_PLATFORM)),)
+#    SOONG_CONFIG_qtidisplay_ubwcp_headers := true
+#endif
 
 # Check if the target uses composer version 3 and is part of composer version on every UM platforms that support it
 ifeq ($(TARGET_USES_COMPOSER3)$(filter $(UM_PLATFORMS),$(TARGET_BOARD_PLATFORM)),true)
