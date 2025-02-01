@@ -1,7 +1,20 @@
 //
-// Copyright (C) 2022-2024 The LineageOS Project
+// Copyright (C) 2022-2025 The LineageOS Project
 // SPDX-License-Identifier: Apache-2.0
 //
+
+soong_config_module_type {
+    name: "mpss_firmware_symlink",
+    module_type: "install_symlink",
+    config_namespace: "rfs",
+    variables: ["mpss_firmware_symlink_target"],
+    properties: ["symlink_target"],
+}
+
+soong_config_string_variable {
+    name: "mpss_firmware_symlink_target",
+    values: ["firmware_mnt", "firmware_modem"],
+}
 
 install_symlink {
     name: "rfs_apq_gnss_hlos_symlink",
@@ -143,11 +156,23 @@ install_symlink {
     symlink_target: "/data/vendor/tombstones/rfs/modem",
 }
 
-install_symlink {
+mpss_firmware_symlink {
     name: "rfs_mdm_mpss_readonly_firmware_symlink",
     vendor: true,
     installed_location: "rfs/mdm/mpss/readonly/firmware",
-    symlink_target: "/vendor/firmware_mnt",
+    soong_config_variables: {
+        mpss_firmware_symlink_target: {
+            firmware_mnt: {
+                symlink_target: "/vendor/firmware_mnt",
+            },
+            firmware_modem: {
+                symlink_target: "/vendor/firmware-modem",
+            },
+            conditions_default: {
+                symlink_target: "/vendor/firmware_mnt",
+            }
+        },
+    },
 }
 
 install_symlink {
@@ -395,11 +420,23 @@ install_symlink {
     symlink_target: "/data/vendor/tombstones/rfs/modem",
 }
 
-install_symlink {
+mpss_firmware_symlink {
     name: "rfs_msm_mpss_readonly_firmware_symlink",
     vendor: true,
     installed_location: "rfs/msm/mpss/readonly/firmware",
-    symlink_target: "/vendor/firmware_mnt",
+    soong_config_variables: {
+        mpss_firmware_symlink_target: {
+            firmware_mnt: {
+                symlink_target: "/vendor/firmware_mnt",
+            },
+            firmware_modem: {
+                symlink_target: "/vendor/firmware-modem",
+            },
+            conditions_default: {
+                symlink_target: "/vendor/firmware_mnt",
+            }
+        },
+    },
 }
 
 install_symlink {
@@ -507,36 +544,80 @@ install_symlink {
     symlink_target: "/mnt/vendor/persist/rfs/shared",
 }
 
+mkdir {
+    name: "vendor_bt_firmware_mountpoint",
+    dir: "bt_firmware",
+    vendor: true,
+}
+
+mkdir {
+    name: "vendor_dsp_mountpoint",
+    dir: "dsp",
+    vendor: true,
+}
+
+mkdir {
+    name: "vendor_firmware_mnt_mountpoint",
+    dir: "firmware_mnt",
+    vendor: true,
+}
+
+mkdir {
+    name: "vendor_firmware-modem_mountpoint",
+    dir: "firmware-modem",
+    vendor: true,
+}
+
+mkdir {
+    name: "vendor_vm-system_mountpoint",
+    dir: "vm-system",
+    vendor: true,
+}
+
 prebuilt_hidl_interfaces {
-    name: "hidl_dpm_api_interface",
+    name: "hidl_com_qualcomm_qti_dpm_api_interface",
     interfaces: [
         "com.qualcomm.qti.dpm.api@1.0::IdpmQmi",
     ],
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_qconfig_interface",
+    name: "hidl_vendor_display_color_interface",
     interfaces: [
-        "vendor.qti.hardware.qconfig@1.0::IQConfig",
+        "vendor.display.color@1.0::IDisplayColor",
+        "vendor.display.color@1.1::IDisplayColor",
+        "vendor.display.color@1.2::IDisplayColor",
+        "vendor.display.color@1.3::IDisplayColor",
+        "vendor.display.color@1.4::IDisplayColor",
+        "vendor.display.color@1.5::IDisplayColor",
+        "vendor.display.color@1.6::IDisplayColor",
+        "vendor.display.color@1.7::IDisplayColor",
     ],
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_alarm_interface",
+    name: "hidl_vendor_display_postproc_interface",
+    interfaces: [
+        "vendor.display.postproc@1.0::IDisplayPostproc",
+    ],
+}
+
+prebuilt_hidl_interfaces {
+    name: "hidl_vendor_qti_hardware_alarm_interface",
     interfaces: [
         "vendor.qti.hardware.alarm@1.0::IAlarm",
     ],
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_dsp_interface",
+    name: "hidl_vendor_qti_hardware_dsp_interface",
     interfaces: [
         "vendor.qti.hardware.dsp@1.0::IDspService",
     ],
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_embmssl_interface",
+    name: "hidl_vendor_qti_hardware_embmssl_interface",
     interfaces: [
         "vendor.qti.hardware.embmssl@1.0::IEmbms",
         "vendor.qti.hardware.embmssl@1.1::IEmbms",
@@ -544,7 +625,7 @@ prebuilt_hidl_interfaces {
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_factory_interface",
+    name: "hidl_vendor_qti_hardware_factory_interface",
     interfaces: [
         "vendor.qti.hardware.factory@1.0::IFactory",
         "vendor.qti.hardware.factory@1.1::IFactory",
@@ -552,7 +633,14 @@ prebuilt_hidl_interfaces {
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_vpp_interface",
+    name: "hidl_vendor_qti_hardware_qconfig_interface",
+    interfaces: [
+        "vendor.qti.hardware.qconfig@1.0::IQConfig",
+    ],
+}
+
+prebuilt_hidl_interfaces {
+    name: "hidl_vendor_qti_hardware_vpp_interface",
     interfaces: [
         "vendor.qti.hardware.vpp@1.1::IHidlVppService",
         "vendor.qti.hardware.vpp@1.2::IHidlVppService",
@@ -563,7 +651,7 @@ prebuilt_hidl_interfaces {
 }
 
 prebuilt_hidl_interfaces {
-    name: "hidl_netperftuner_interface",
+    name: "hidl_vendor_qti_hardware_wigig_netperftuner_interface",
     interfaces: [
         "vendor.qti.hardware.wigig.netperftuner@1.0::INetPerfTuner",
     ],
